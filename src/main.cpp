@@ -36,15 +36,9 @@ void setup()
  */
 void loop()
 {
-    if (!mfrc522.PICC_IsNewCardPresent())
-    {
-        return;
-    }
+    if (!mfrc522.PICC_IsNewCardPresent()) { return; }
 
-    if (!mfrc522.PICC_ReadCardSerial())
-    {
-        return;
-    }
+    if (!mfrc522.PICC_ReadCardSerial()) { return; }
 
     Serial.print("UID tag : ");
     String content = "";
@@ -64,7 +58,7 @@ void loop()
     if (adding)
     {
         Serial.println("Next card will be added .... ");
-        cards[(sizeof(cards) / sizeof(int)) + 1] = content.substring(1); // marche pas ca
+        //cards[(sizeof(cards) / sizeof(int)) + 1] = content.substring(1); // marche pas ca
     }
     else
     {
