@@ -29,7 +29,7 @@ WiFiClient client;
 PubSubClient mqttClient(client);
 
 String masterCard = "72 0C AA 1B";
-String cards[] = {"B2 A8 3F 61", "30 51 40 4F"};
+String cards[] = {"B2 A8 3F 61", "DC 33 75 32"};
 
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance.
 
@@ -77,8 +77,12 @@ void setup(){
   {
     while (!mqttClient.connected())
     {
-      if (mqttClient.connect(mqtt_client_name)) { Serial.println("MQTT Connected!"); }
-        else { Serial.print(".");}
+      if (mqttClient.connect(mqtt_client_name))
+      {
+        Serial.println("MQTT Connected!");
+        mqttClient.subscribe(mqtt_sub_topic);
+      }
+      else { Serial.print(".");}
     }
   }
 
@@ -90,8 +94,9 @@ void setup(){
  */
 void loop(){
 
-  Serial.print("oui oui oui oui ");
+  //Serial.print("oui oui oui oui ");
 
+  //check mqtt and reconnect if disconnected
   if (!mqttClient.connected()) {
     while (!mqttClient.connected())
     {
@@ -109,7 +114,8 @@ void loop(){
 
   String card = "";
 
-  if (mfrc522.PICC_IsNewCardPresent())
+
+  if (mfrc522.PICC_IsNewCardPresent()) // when card is scanned
   {
     mfrc522.PICC_ReadCardSerial();
     for (byte i = 0; i < mfrc522.uid.size; i++)
@@ -118,10 +124,10 @@ void loop(){
       card.concat(String(mfrc522.uid.uidByte[i], HEX));
     }
     card.toUpperCase();
-    Serial.print("UID tag : ");
-    Serial.println(card);
+    //Serial.print("UID tag : ");
+    //Serial.println(card);
     mqttClient.publish(mqtt_pub_topic, card.c_str());
-    delay(1000);
+    delay(500);
   }
 
   mqttClient.loop();
@@ -139,20 +145,20 @@ void loop(){
     }
 
     else { if (card.substring(1) == cards[i]) { authorisation = 1; } }
-  }
+  }*/
 
   if (authorisation)
   {
-    Serial.println("access oui");
+    //Serial.println("access oui");
     digitalWrite(RELAY_PIN, HIGH); // ouvrir porte
-    delay(2000);                   // laisser ouvert 3 secondes
+    delay(2000);                   // laisser ouvert 2 secondes
     digitalWrite(RELAY_PIN, LOW);  // fermer porte
   }
   else
   {
-    Serial.println("non tu non non");
+    //Serial.println("non tu non non");
   }
   authorisation = 0;
-  //}*/
+  //}
   delay(250);
 }
