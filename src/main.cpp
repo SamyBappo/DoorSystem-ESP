@@ -128,27 +128,26 @@ void loop(){
   {
     mfrc522.PICC_ReadCardSerial(); // lecture de la carte
     card = "";
-    for (byte i = 0; i < mfrc522.uid.size; i++)
-    {
+    for (byte i = 0; i < mfrc522.uid.size; i++){
       card.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
       card.concat(String(mfrc522.uid.uidByte[i], HEX));
     }
     card.toUpperCase();
-    //Serial.print("UID tag : ");
+    Serial.print("UID tag : ");
     Serial.println(card);
 
     if(add==0){ mqttClient.publish(mqtt_pub_check, card.c_str()); }// envoyer le uid sur le topic pour verifier la carte
-    else 
+    else {
       mqttClient.publish(mqtt_pub_add, card.c_str()); // pour ajouter la carte
       add=0;
+    }
   }
 
   mqttClient.loop(); // loop pour continuer a verifier les messages
   
   // pour ouvrir la porte si la carte est authentifiee
-  if (auth)
-  {
-    //Serial.println("access oui");
+  if (auth) {
+    Serial.println("access oui");
     digitalWrite(RELAY_PIN, HIGH); // ouvrir porte
     delay(2000);                   // laisser ouvert 2 secondes
     digitalWrite(RELAY_PIN, LOW);  // fermer porte
@@ -156,13 +155,11 @@ void loop(){
   }
 
   // pour ajouter la carte
-  if (add != 0){
+  if (add > 0){
+    add --;
+    Serial.print(add);
     Serial.println("Next card will be added .... ");
-    //cards[(sizeof(cards) / sizeof(int)) + 1] = content.substring(1); // marche pas ca
   }
 
-  Serial.print(add);
-  if(add !=0) {add --;}
-  //}
   delay(250);
 }
