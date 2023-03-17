@@ -135,7 +135,7 @@ void loop(){
     }
     card.toUpperCase();
     //Serial.print("UID tag : ");
-    //Serial.println(card);
+    Serial.println(card);
     mqttClient.publish(mqtt_pub_check, card.c_str());
     delay(500);
   }
