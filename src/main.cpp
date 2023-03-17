@@ -49,7 +49,7 @@ void callback(char *topic, byte *payload, unsigned int length){
   // gestion des etats selon la reponse de l'api
   switch (acsLvl) {
   case 1: auth=1; break;
-  case 2: add=40; break;
+  case 2: add=20; break;
     default: break;
   }
 
@@ -136,11 +136,11 @@ void loop(){
     card.toUpperCase();
     //Serial.print("UID tag : ");
     Serial.println(card);
-    
-    if(add==0){
-      mqttClient.publish(mqtt_pub_check, card.c_str()); // envoyer le uid sur le topic pour verifier la carte
-      delay(500);
-    }
+
+    if(add==0){ mqttClient.publish(mqtt_pub_check, card.c_str()); }// envoyer le uid sur le topic pour verifier la carte
+    else 
+      mqttClient.publish(mqtt_pub_add, card.c_str()); // pour ajouter la carte
+      add=0;
   }
 
   mqttClient.loop(); // loop pour continuer a verifier les messages
@@ -152,18 +152,17 @@ void loop(){
     digitalWrite(RELAY_PIN, HIGH); // ouvrir porte
     delay(2000);                   // laisser ouvert 2 secondes
     digitalWrite(RELAY_PIN, LOW);  // fermer porte
+    auth=0;                        // reset
   }
 
   // pour ajouter la carte
-  if (add != 0)
-  {
+  if (add != 0){
     Serial.println("Next card will be added .... ");
     //cards[(sizeof(cards) / sizeof(int)) + 1] = content.substring(1); // marche pas ca
   }
 
-  auth=0;
-  add --;
   Serial.print(add);
+  if(add !=0) {add --;}
   //}
   delay(250);
 }
