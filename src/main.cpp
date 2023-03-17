@@ -31,7 +31,7 @@ MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance.
 
 String card="";
 byte acsLvl=0;
-bool add=0;
+byte add=0;
 bool auth=0;
 
 String masterCard = "72 0C AA 1B";
@@ -44,17 +44,11 @@ void callback(char *topic, byte *payload, unsigned int length){
   Serial.print(" ");
   for (int i = 0; i < length; i++) { acsLvl = (payload[i] - '0'); }
   Serial.print(acsLvl);
-  switch (acsLvl)
-  {
-  case 1:
-    auth=1;
-    break;
-  case 2:
-    add=1;
-    break;
-  
-  default:
-    break;
+
+  switch (acsLvl) {
+  case 1: auth=1; break;
+  case 2: add=40; break;
+    default: break;
   }
 
   Serial.println();
@@ -141,22 +135,7 @@ void loop(){
   }
 
   mqttClient.loop();
-  /*if (adding)
-  {
-    Serial.println("Next card will be added .... ");
-    //cards[(sizeof(cards) / sizeof(int)) + 1] = content.substring(1); // marche pas ca
-  }
-  else
-  {*/
-    /*for (byte i = 0; i < sizeof(cards) / sizeof(int); i++) {
-    if (card.substring(1) == masterCard) {
-      authorisation = 1;
-      break;
-    }
-
-    else { if (card.substring(1) == cards[i]) { authorisation = 1; } }
-  }*/
-
+  
   if (auth)
   {
     //Serial.println("access oui");
@@ -164,12 +143,16 @@ void loop(){
     delay(2000);                   // laisser ouvert 2 secondes
     digitalWrite(RELAY_PIN, LOW);  // fermer porte
   }
-  else
+
+  if (add != 0)
   {
-    //Serial.println("non tu non non");
+    Serial.println("Next card will be added .... ");
+    //cards[(sizeof(cards) / sizeof(int)) + 1] = content.substring(1); // marche pas ca
   }
+
   auth=0;
-  add=0;
+  add --;
+  Serial.print(add);
   //}
   delay(250);
 }
