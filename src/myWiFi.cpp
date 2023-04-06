@@ -1,6 +1,7 @@
 #include "myWiFi.h"
 
 bool myWiFi::connectToWiFi(const char* ssid, const char* password) {
+  WiFi.mode(WIFI_STA);  // The WiFi is in station mode
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ");
   Serial.print(ssid);
@@ -21,9 +22,10 @@ bool myWiFi::connectToWiFi(const char* ssid, const char* password) {
 }
 
 void myWiFi::startAPMode(const char* apSSID, const char* apPassword) {
+  WiFi.mode(WIFI_AP); // The WiFi is in access point mode
   WiFi.softAP(apSSID, apPassword);
-  Serial.print("Access point mode started with SSID ");
-  Serial.println(apSSID);
+  Serial.print("Access point mode started with SSID and password:");
+  Serial.println(apSSID + String(" ") + apPassword);
   Serial.print("Access point IP address: ");
   Serial.println(WiFi.softAPIP());
 
