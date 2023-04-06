@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <PubSubClient.h>
+#include "myWiFi.h"
 
 // Wifi credentianls
 const char *ssid = "EcoleDuWeb2.4g";
@@ -69,12 +70,13 @@ void setup(){
   }
 
   // afficher les infos de la connexion dans le terminal
-  Serial.println("");
+  /*Serial.println("");
   Serial.print("WiFi connected to: ");
   Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  Serial.println("Hol'up a minute");
+  Serial.println("Hol'up a minute");*/
+
   delay(3000);
 
   mqttClient.setServer(mqttServer, mqttPort); // connexion au broker mqtt
