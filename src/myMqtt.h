@@ -16,6 +16,8 @@ class MyMqtt {
     const char* mqttSubTopic;
 
   public:
+    bool auth=0;
+    byte add=0;
     MyMqtt(const char* server, int port, const char* username, const char* password, const char* clientId, const char* subTopic);
     void setup();
     void refresh();

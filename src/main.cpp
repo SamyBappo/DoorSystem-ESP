@@ -1,10 +1,9 @@
 #include <SPI.h>
 #include <MFRC522.h>
-#include <PubSubClient.h>
 #include "myWiFi.h"
 #include "myMqtt.h"
 
-// pins pour la communication SPI avec le lecteur RFID-RC522
+// pins for SPI communication with RFID-RC522 card reader
 #define RELAY_PIN 15 // pin for relay
 #define ONBOARD_LED_PIN 2
 #define RST_PIN 22 // Reset pin
@@ -29,13 +28,13 @@ MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance.
 // my classes
 myWiFi wifi;
 MyMqtt mqtt(mqttServer, mqttPort,  mqtt_client_name, "", "", mqtt_sub_topic);
-// variables pour la gestion des etats
+// variables for state management
 String card="";
 byte acsLvl=0;
-byte add=0;
-bool auth=0;
+//byte add=0;
+//bool auth=0;
 
-// variables pour test (retirer pour release final)
+// test variables (remove later)
 String masterCard = "72 0C AA 1B";
 String cards[] = {"B2 A8 3F 61", "DC 33 75 32"};
 
@@ -68,6 +67,7 @@ void setup(){
   Serial.println("Lessgo scan...");
 }
 
+
 /**
  * Main loop.
  */
@@ -77,7 +77,7 @@ void loop(){
 
   if (mfrc522.PICC_IsNewCardPresent()) // when card is scanned
   {
-    mfrc522.PICC_ReadCardSerial(); // lecture de la carte
+    mfrc522.PICC_ReadCardSerial(); // card is read
     card = "";
     for (byte i = 0; i < mfrc522.uid.size; i++){
       card.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
@@ -87,36 +87,36 @@ void loop(){
     Serial.print("UID tag : ");
     Serial.println(card);
 
-    if(add==0){ mqtt.publish(mqtt_pub_check, card.c_str()); }// envoyer le uid sur le topic pour verifier la carte
+    if(mqtt.add==0){ mqtt.publish(mqtt_pub_check, card.c_str()); }// send uid to mqtt server to check if card is authorized
     else {
-      mqtt.publish(mqtt_pub_add, card.c_str()); // pour ajouter la carte
-      add=0;
+      mqtt.publish(mqtt_pub_add, card.c_str()); // send uid to mqtt server to add card
+      mqtt.add=0;
     }
   }
 
-  mqtt.loop(); // loop pour continuer a verifier les messages
+  mqtt.loop(); // loop mqtt client to check for incoming messages
   
-  // pour ouvrir la porte si la carte est authentifiee
-  if (auth) {
+  // opens door if card is authorized
+  if (mqtt.auth) {
     Serial.println("access oui");
     digitalWrite(RELAY_PIN, HIGH); // ouvrir porte
     delay(2000);                   // laisser ouvert 2 secondes
     digitalWrite(RELAY_PIN, LOW);  // fermer porte
-    auth=0;                        // reset
+    mqtt.auth=0;                        // reset
   }
 
   // pour ajouter la carte
-  if (add > 0){
-    add --;
-    Serial.print(add);
-    Serial.println("Next card will be added .... ");
+  if (mqtt.add > 0){
+    mqtt.add --;
+    Serial.print(mqtt.add);
+    Serial.println(" second remaining, Next card will be added .... ");
   }
 
   delay(250);
 }
 
 // callback to be executed when the subscribed-to topic has a pub
-void callback(char *topic, byte *payload, unsigned int length){
+/*void callback(char *topic, byte *payload, unsigned int length){
   Serial.print("Message received from ");
   Serial.print(topic);
   Serial.print(" ");
@@ -131,4 +131,4 @@ void callback(char *topic, byte *payload, unsigned int length){
   }
 
   Serial.println();
-}
+}*/
