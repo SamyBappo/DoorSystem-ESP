@@ -87,9 +87,9 @@ void loop(){
     Serial.print("UID tag : ");
     Serial.println(card);
 
-    if(add==0){ mqttClient.publish(mqtt_pub_check, card.c_str()); }// envoyer le uid sur le topic pour verifier la carte
+    if(add==0){ mqtt.publish(mqtt_pub_check, card.c_str()); }// envoyer le uid sur le topic pour verifier la carte
     else {
-      mqttClient.publish(mqtt_pub_add, card.c_str()); // pour ajouter la carte
+      mqtt.publish(mqtt_pub_add, card.c_str()); // pour ajouter la carte
       add=0;
     }
   }

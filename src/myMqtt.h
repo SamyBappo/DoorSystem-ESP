@@ -21,7 +21,8 @@ class MyMqtt {
     void refresh();
     void loop();
     void publish(const char* topic, const char* message);
-    void callback();
+    void setCallback(void (*callback)(char*, byte*, unsigned int));
+    static void callback(char* topic, byte* payload, unsigned int length);
 };
 
 #endif
