@@ -2,6 +2,7 @@
 #include <MFRC522.h>
 #include "myWiFi.h"
 #include "myMqtt.h"
+#include "MyRfid.h"
 
 // pins for SPI communication with RFID-RC522 card reader
 #define RELAY_PIN 15 // pin for relay
@@ -11,7 +12,7 @@
 
 // default Wifi credentianls
 const char *ssid = "EcoleDuWeb2.4g";
-const char *password = "EcoleDuWEB";
+const char *password = "EcoleDuWEBno";
 
 // const and var for mqtt connection and communication
 const char *mqttServer        = "172.16.5.101";
@@ -23,7 +24,7 @@ const char *mqtt_sub_topic    = "/door/acsLvl";  // The topic to which our clien
 
 //__________________________________________________________________________________________________________
 
-MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance.
+MyRfid rfid(SS_PIN, RST_PIN); // Create MyRfid instance.
 
 // my classes
 myWiFi wifi;
@@ -50,8 +51,7 @@ void setup(){
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, LOW); // make sure the relay is off
   
-  SPI.begin(); // Init SPI bus
-  mfrc522.PCD_Init();
+  rfid.setup(); // Initialize RFID-RC522 card reader.
   delay(10);
 
   // wifi connection
@@ -77,23 +77,13 @@ void loop(){
   //check mqtt and reconnect if disconnected
   mqtt.refresh();
 
-  if (mfrc522.PICC_IsNewCardPresent()) // when card is scanned
-  {
-    mfrc522.PICC_ReadCardSerial(); // card is read
-    card = "";
-    for (byte i = 0; i < mfrc522.uid.size; i++){
-      card.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-      card.concat(String(mfrc522.uid.uidByte[i], HEX));
-    }
-    card.toUpperCase();
-    Serial.print("UID tag : ");
+  if (rfid.isNewCardPresent()) {
+    card = rfid.readCardSerial();
+    Serial.print("UID tag: ");
     Serial.println(card);
 
-    if(mqtt.add==0){ mqtt.publish(mqtt_pub_check, card.c_str()); }// send uid to mqtt server to check if card is authorized
-    else {
-      mqtt.publish(mqtt_pub_add, card.c_str()); // send uid to mqtt server to add card
-      mqtt.add=0;
-    }
+    // http request to check if card is authorized
+
   }
 
   mqtt.loop(); // loop mqtt client to check for incoming messages
@@ -106,8 +96,7 @@ void loop(){
     digitalWrite(RELAY_PIN, LOW);  // fermer porte
     mqtt.auth=0;                        // reset
   }
-
-  // pour ajouter la carte
+  
   if (mqtt.add > 0){
     mqtt.add --;
     Serial.print(mqtt.add);
