@@ -38,6 +38,8 @@ byte acsLvl=0;
 String masterCard = "72 0C AA 1B";
 String cards[] = {"B2 A8 3F 61", "DC 33 75 32"};
 
+
+
 /**
  * Initialize.
  */

@@ -1,3 +1,4 @@
+#include <functional>
 #include "myMqtt.h"
 
 MyMqtt::MyMqtt(const char* server, int port, const char* username, const char* password, const char* clientId, const char* subTopic)
@@ -15,22 +16,24 @@ void MyMqtt::callback(char *topic, byte *payload, unsigned int length){
   Serial.print("Message received from ");
   Serial.print(topic);
   Serial.print(" ");
-  /*for (int i = 0; i < length; i++) { acsLvl = (payload[i] - '0'); }
-  Serial.print(acsLvl);
+  byte access = 0;
+  for (int i = 0; i < length; i++) { access = (payload[i] - '0'); }
+  Serial.print(access);
 
-  // gestion des etats selon la reponse de l'api
-  switch (acsLvl) {
-  case 1: auth=1; break;
-  case 2: add=20; break;
+  // update member variables based on the received message
+  switch (access) {
+  case 1: this->auth=1; break;
+  case 2: this->add=20; break;
     default: break;
   }
 
-  Serial.println();*/
+  Serial.println();
 }
 
 void MyMqtt::setup() {
   mqttClient.setServer(mqttServer, mqttPort);
-  mqttClient.setCallback(MyMqtt::callback);
+  this->setCallback(std::bind(&MyMqtt::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+  //mqttClient.setCallback(&MyMqtt::callback, this);
   //mqttClient.setCallback(callback);
 
   while (!mqttClient.connected()) {
@@ -50,6 +53,8 @@ void MyMqtt::setup() {
 void MyMqtt::refresh() {
   //check mqtt and reconnect if disconnected
   if (!mqttClient.connected()) {
+    
+  this->setCallback(std::bind(&MyMqtt::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     Serial1.println("MQTT connection lost, trying to reconnect...");
     while (!mqttClient.connected()) {
     Serial.println("Connecting to MQTT server...");
@@ -71,4 +76,10 @@ void MyMqtt::loop() {
 
 void MyMqtt::publish(const char* topic, const char* message) {
   mqttClient.publish(topic, message);
+}
+
+void MyMqtt::setCallback(std::function<void(char*, byte*, unsigned int)> callback) {
+  mqttClient.setCallback([=](char* topic, byte* payload, unsigned int length) {
+    callback(topic, payload, length);
+  });
 }
