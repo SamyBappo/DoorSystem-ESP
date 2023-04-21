@@ -74,3 +74,41 @@ void myWiFi::serveWebPage(WiFiClient client) {
     WiFi.begin(ssid.c_str(), password.c_str());
   }
 }
+
+bool myWiFi::makePostRequest(const char* url, const std::map<std::string, std::string>& formData) {
+  WiFiClientSecure client;
+  if (!client.connect(url, 443)) { // HTTPS
+    Serial.println("Connection failed.");
+    return false;
+  }
+
+  String postBody;
+  for (auto& entry : formData) {
+    postBody += entry.first + "=" + entry.second + "&";
+  }
+  postBody.remove(postBody.length() - 1); // Remove last "&"
+
+  client.println("POST " + String(url) + " HTTP/1.1");
+  client.println("Host: " + String(url));
+  client.println("Content-Type: application/x-www-form-urlencoded");
+  client.println("Content-Length: " + String(postBody.length()));
+  client.println();
+  client.println(postBody);
+
+  Serial.println("POST request sent.");
+
+  // Wait for response
+  unsigned long startTime = millis();
+  while (!client.available() && millis() - startTime < 5000) {
+    delay(100);
+  }
+
+  if (client.available()) {
+    String response = client.readStringUntil('\r');
+    Serial.println("Response: " + response);
+    return true;
+  } else {
+    Serial.println("No response received.");
+    return false;
+  }
+}

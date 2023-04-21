@@ -11,6 +11,7 @@ class myWiFi {
   private:
     WiFiServer server;
     void serveWebPage(WiFiClient client);
+    bool myWiFi::makePostRequest(const char* url, const std::map<String, String>& formData);
 };
 
 #endif
