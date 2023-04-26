@@ -1,8 +1,9 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include "myWiFi.h"
+#include "myHttp.h"
 #include "myMqtt.h"
-#include "MyRfid.h"
+#include "myRfid.h"
 
 #include "var.h"
 
@@ -11,8 +12,9 @@
 // my classes
 
 MyRfid rfid(SS_PIN, RST_PIN); // Create MyRfid instance.
-myWiFi wifi;
-MyMqtt mqtt(mqttServer, mqttPort,  mqtt_client_name, "", "", mqtt_sub_topic);
+MyWiFi wifi;
+MyHttp http(apiServer, apiPort);
+MyMqtt mqtt(mqttServer, mqttPort,  mqtt_name, "", "", mqtt_sub_topic);
 
 // variables for state management
 String card="";
@@ -67,6 +69,7 @@ void loop(){
     Serial.println(card);
 
     // http request to check if card is authorized
+    http.sendPostReq(api_check_card, "cardUid", card.c_str(), "doorName", doorName);
   }
 
   mqtt.loop(); // loop mqtt client to check for incoming messages

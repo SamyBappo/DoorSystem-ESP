@@ -36,37 +36,37 @@ void MyMqtt::setup() {
   //mqttClient.setCallback(&MyMqtt::callback, this);
   //mqttClient.setCallback(callback);
 
-  while (!mqttClient.connected()) {
-    Serial.println("Connecting to MQTT server...");
-    if (mqttClient.connect(mqttClientId, mqttUsername, mqttPassword)) {
-      Serial.println("Connected to MQTT server");
-      mqttClient.subscribe(mqttSubTopic);
-    } else {
-      Serial.print("MQTT connection failed with error code ");
-      Serial.println(mqttClient.state());
-      delay(5000);
-    }
+  Serial.println("Connecting to MQTT server...");
+  if (mqttClient.connect(mqttClientId, mqttUsername, mqttPassword)) {
+    Serial.println("Connected to MQTT server");
+    mqttClient.subscribe(mqttSubTopic);
+  } else {
+    Serial.print("MQTT connection failed with error code ");
+    Serial.println(mqttClient.state());
+    delay(5000);
   }
+  
 }
 
 //check mqtt and reconnect if disconnected
 void MyMqtt::refresh() {
   //check mqtt and reconnect if disconnected
   if (!mqttClient.connected()) {
-    
-  this->setCallback(std::bind(&MyMqtt::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+    this->setCallback(std::bind(&MyMqtt::callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
     Serial1.println("MQTT connection lost, trying to reconnect...");
-    while (!mqttClient.connected()) {
+    
     Serial.println("Connecting to MQTT server...");
     if (mqttClient.connect(mqttClientId, mqttUsername, mqttPassword)) {
       Serial.println("Connected to MQTT server");
       mqttClient.subscribe(mqttSubTopic);
-    } else {
+    } 
+    else {
       Serial.print("MQTT connection failed with error code ");
       Serial.println(mqttClient.state());
       delay(5000);
     }
-  }
   }
 }
 

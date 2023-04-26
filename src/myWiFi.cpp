@@ -1,6 +1,6 @@
 #include "myWiFi.h"
 
-bool myWiFi::connectToWiFi(const char* ssid, const char* password) {
+bool MyWiFi::connectToWiFi(const char* ssid, const char* password) {
   WiFi.mode(WIFI_STA);  // The WiFi is in station mode
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ");
@@ -21,7 +21,7 @@ bool myWiFi::connectToWiFi(const char* ssid, const char* password) {
   }
 }
 
-void myWiFi::startAPMode(const char* apSSID, const char* apPassword) {
+void MyWiFi::startAPMode(const char* apSSID, const char* apPassword) {
   WiFi.mode(WIFI_AP); // The WiFi is in access point mode
   WiFi.softAP(apSSID, apPassword);
   Serial.print("Access point mode started with SSID and password:");
@@ -38,9 +38,9 @@ void myWiFi::startAPMode(const char* apSSID, const char* apPassword) {
   }
 }
 
-void myWiFi::serveWebPage(WiFiClient client) {
+void MyWiFi::serveWebPage(WiFiClient client) {
   String request = client.readStringUntil('\r');
-  client.flush();
+  //client.flush();
 
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
@@ -72,43 +72,5 @@ void myWiFi::serveWebPage(WiFiClient client) {
     WiFi.disconnect();
     delay(1000);
     WiFi.begin(ssid.c_str(), password.c_str());
-  }
-}
-
-bool myWiFi::makePostRequest(const char* url, const std::map<std::string, std::string>& formData) {
-  WiFiClientSecure client;
-  if (!client.connect(url, 443)) { // HTTPS
-    Serial.println("Connection failed.");
-    return false;
-  }
-
-  String postBody;
-  for (auto& entry : formData) {
-    postBody += entry.first + "=" + entry.second + "&";
-  }
-  postBody.remove(postBody.length() - 1); // Remove last "&"
-
-  client.println("POST " + String(url) + " HTTP/1.1");
-  client.println("Host: " + String(url));
-  client.println("Content-Type: application/x-www-form-urlencoded");
-  client.println("Content-Length: " + String(postBody.length()));
-  client.println();
-  client.println(postBody);
-
-  Serial.println("POST request sent.");
-
-  // Wait for response
-  unsigned long startTime = millis();
-  while (!client.available() && millis() - startTime < 5000) {
-    delay(100);
-  }
-
-  if (client.available()) {
-    String response = client.readStringUntil('\r');
-    Serial.println("Response: " + response);
-    return true;
-  } else {
-    Serial.println("No response received.");
-    return false;
   }
 }
