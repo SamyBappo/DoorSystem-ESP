@@ -26,7 +26,6 @@ String masterCard = "72 0C AA 1B";
 String cards[] = {"B2 A8 3F 61", "DC 33 75 32"};
 
 
-
 /**
  * Initialize.
  */
@@ -67,9 +66,15 @@ void loop(){
     card = rfid.readCardSerial();
     Serial.print("UID tag: ");
     Serial.println(card);
-
-    // http request to check if card is authorized
-    http.sendPostReq(api_check_card, "cardUid", card.c_str(), "doorName", doorName);
+    
+    if (mqtt.add > 0){
+        // http request to add card and door authorisation
+        http.sendPostReq(api_check_card, "cardUid", card.c_str(), "doorName", doorName);
+      }
+      else{
+        // http request to check if card is authorized
+        http.sendPostReq(api_check_card, "cardUid", card.c_str(), "doorName", doorName);
+      }
   }
 
   mqtt.loop(); // loop mqtt client to check for incoming messages
@@ -83,12 +88,11 @@ void loop(){
     mqtt.auth=0;                    // reset auth
   }
 
-  if (mqtt.add > 0){
-    mqtt.add --;
-    Serial.print(mqtt.add);
-    Serial.println(" second remaining, Next card will be added .... ");
-  }
+  
 
+  mqtt.add --;
+  Serial.print(mqtt.add);
+  Serial.println(" second remaining, Next card will be added .... ");
   delay(250);
 }
 

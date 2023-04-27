@@ -13,8 +13,8 @@ const char *doorName        = "C-089";
 
 const char *apiServer       = "137.184.168.254";
 const int   apiPort         = 8080;
-const char *api_check_card  = "/api/access/check";
-const char *api_add_card    = "/api/card/add";
+const char *api_card_check  = "/api/access/check";
+const char *api_card_add    = "/api/card/add";
 
 const char *mqttServer      = "172.16.5.101";
 const int   mqttPort        = 1883;
