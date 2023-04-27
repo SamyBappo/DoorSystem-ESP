@@ -16,15 +16,7 @@ MyWiFi wifi;
 MyHttp http(apiServer, apiPort);
 MyMqtt mqtt(mqttServer, mqttPort,  mqtt_name, "", "", mqtt_sub_topic);
 
-// variables for state management
 String card="";
-//byte add=0;
-//bool auth=0;
-
-// test variables (remove later)
-String masterCard = "72 0C AA 1B";
-String cards[] = {"B2 A8 3F 61", "DC 33 75 32"};
-
 
 /**
  * Initialize.
