@@ -1,4 +1,4 @@
-#include "MyRfid.h"
+#include "myRfid.h"
 
 MyRfid::MyRfid(byte ssPin, byte rstPin) : mfrc522(ssPin, rstPin) {}
 
