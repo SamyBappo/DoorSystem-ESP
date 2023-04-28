@@ -15,7 +15,7 @@
 MyRfid rfid(SS_PIN, RST_PIN);
 MyWiFi wifi;
 MyHttp http(apiServer, apiPort);
-MyMqtt mqtt(mqttServer, mqttPort,  mqtt_name, "", "", mqtt_sub_topic);
+MyMqtt mqtt(mqttServer, mqttPort, mqtt_user, mqtt_password, mqtt_id, mqtt_sub_topic);
 
 /**
  * Initialize.
@@ -49,7 +49,7 @@ void setup(){
  */
 void loop(){
   //check mqtt and reconnect if disconnected
-  mqtt.refresh();
+  //mqtt.refresh();
 
   if (rfid.isNewCardPresent()) {
     rfid.readCardSerial();
@@ -59,7 +59,8 @@ void loop(){
     // http request to add card and door authorisation if add timout hasen't run out yet
     if (mqtt.add > 0){ http.sendPostReq(api_card_add, "cardUid", rfid.card.c_str(), "doorName", doorName); }
     // http request to check if card is authorized
-    else{http.sendPostReq(api_card_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
+    //else{http.sendPostReq(api_card_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
+    mqtt.publish(mqtt_pub_check, rfid.card.c_str());
   }
 
   mqtt.loop(); // loop mqtt client to check for incoming messages
