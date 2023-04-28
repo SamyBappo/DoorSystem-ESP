@@ -1,16 +1,16 @@
 // pins for SPI communication with RFID-RC522 card reader
-#define RELAY_PIN 15 // pin for relay
-#define ONBOARD_LED_PIN 2
+#define RELAY_PIN 7 // pin for relay
 #define RST_PIN 22 // Reset pin
 #define SS_PIN 21  // Slave select pin
 
-#define LED_GREEN_PIN 32
-#define LED_YELLOW_PIN 25
-#define LED_RED_PIN 33
+#define LED_GREEN_PIN 2
+#define LED_YELLOW_PIN 4
+#define LED_RED_PIN 17
+#define ONBOARD_LED_PIN 2
 
 // default Wifi credentianls
-const char *ssid = "P500";
-const char *password = "Patate123";
+const char *ssid = "EcoleDuWeb2.4g";
+const char *password = "EcoleDuWEB";
 
 // const and var for mqtt connection and communication
 const char *doorName        = "C-089";

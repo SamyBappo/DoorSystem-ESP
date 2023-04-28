@@ -12,7 +12,7 @@
 
 // my classes
 // Create all instances.
-MyRfid rfid(SS_PIN, RST_PIN); 
+MyRfid rfid(SS_PIN, RST_PIN);
 MyWiFi wifi;
 MyHttp http(apiServer, apiPort);
 MyMqtt mqtt(mqttServer, mqttPort,  mqtt_name, "", "", mqtt_sub_topic);
