@@ -4,6 +4,10 @@
 #define RST_PIN 22 // Reset pin
 #define SS_PIN 21  // Slave select pin
 
+#define LED_GREEN_PIN 32
+#define LED_YELLOW_PIN 25
+#define LED_RED_PIN 33
+
 // default Wifi credentianls
 const char *ssid = "P500";
 const char *password = "Patate123";
@@ -21,4 +25,4 @@ const int   mqttPort        = 1883;
 const char *mqtt_name       = "ESP32";
 const char *mqtt_pub_check  = "/door/card/check"; // The topic to which our client will publish
 const char *mqtt_pub_add    = "/door/card/add"; // The topic to which our client will publish
-const char *mqtt_sub_topic  = "/door/access";  // The topic to which our client will subscribe
+const char *mqtt_sub_topic  = "/DoorSystem/access";  // The topic to which our client will subscribe

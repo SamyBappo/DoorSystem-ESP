@@ -7,8 +7,9 @@ class MyRfid {
   public:
     MyRfid(byte ssPin, byte rstPin);
     void setup();
+    String card;
     bool isNewCardPresent();
-    String readCardSerial();
+    void readCardSerial();
   
   private:
     MFRC522 mfrc522;

@@ -17,8 +17,6 @@ MyWiFi wifi;
 MyHttp http(apiServer, apiPort);
 MyMqtt mqtt(mqttServer, mqttPort,  mqtt_name, "", "", mqtt_sub_topic);
 
-String card="";
-
 /**
  * Initialize.
  */
@@ -29,13 +27,13 @@ void setup(){
   digitalWrite(RELAY_PIN, LOW); // make sure the relay is off
   
   rfid.setup(); // Initialize RFID-RC522 card reader.
-  delay(10);
+  delay(100);
 
   // wifi connection
   if( !wifi.connectToWiFi(ssid, password)){
     wifi.startAPMode("ESP32", "Patate123");
   }
-  delay(3000);
+  delay(100);
 
   mqtt.setup();// mqtt connection
 
@@ -54,14 +52,14 @@ void loop(){
   mqtt.refresh();
 
   if (rfid.isNewCardPresent()) {
-    card = rfid.readCardSerial();
+    rfid.readCardSerial();
     Serial.print("UID tag: ");
-    Serial.println(card);
+    Serial.println(rfid.card);
     
     // http request to add card and door authorisation if add timout hasen't run out yet
-    if (mqtt.add > 0){ http.sendPostReq(api_check_card, "cardUid", card.c_str(), "doorName", doorName); }
+    if (mqtt.add > 0){ http.sendPostReq(api_card_add, "cardUid", rfid.card.c_str(), "doorName", doorName); }
     // http request to check if card is authorized
-    else{http.sendPostReq(api_check_card, "cardUid", card.c_str(), "doorName", doorName); }
+    else{http.sendPostReq(api_card_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
   }
 
   mqtt.loop(); // loop mqtt client to check for incoming messages
@@ -76,10 +74,11 @@ void loop(){
   }
 
   
-
-  mqtt.add --;
-  Serial.print(mqtt.add);
-  Serial.println(" second remaining, Next card will be added .... ");
+  if(mqtt.add > 0){
+    mqtt.add --;
+    Serial.print(mqtt.add);
+    Serial.println(" seconds remaining, Next card will be added .... ");
+  }
   delay(250);
 }
 
