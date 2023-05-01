@@ -13,12 +13,14 @@ class MyMqtt {
     const char* mqttUsername;
     const char* mqttPassword;
     const char* mqttClientId;
-    const char* mqttSubTopic;
 
   public:
+    const char* mqttSubAccess;
+    const char* mqttSubAdd;
+    const char* doorName;
     bool auth=0;
     byte add=0;
-    MyMqtt(const char* server, int port, const char* username, const char* password, const char* clientId, const char* subTopic);
+    MyMqtt(const char* server, int port, const char* client_id, const char* username, const char* password, const char* doorName);
     void setup();
     void refresh();
     void loop();

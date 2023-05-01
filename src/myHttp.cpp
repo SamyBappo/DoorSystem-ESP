@@ -22,13 +22,13 @@ void MyHttp::sendPostReq(const char* uri, const char* key1, const char* value1, 
 
   int httpResponseCode = client.POST(postData);
 
-  if (httpResponseCode > 0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-    String response = client.getString();
-    Serial.println(response);
-  } else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
+  // if (httpResponseCode > 0) {
+  //   Serial.print("HTTP Response code: ");
+  //   Serial.println(httpResponseCode);
+  //   String response = client.getString();
+  //   Serial.println(response);
+  // } else {
+  //   Serial.print("Error code: ");
+  //   Serial.println(httpResponseCode);
+  // }
 }
