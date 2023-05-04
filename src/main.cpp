@@ -15,7 +15,7 @@
 MyRfid rfid(SS_PIN, RST_PIN);
 MyWiFi wifi;
 MyHttp http(apiServer, apiPort);
-MyMqtt mqtt(mqttServer, mqttPort, mqtt_id, mqtt_user, mqtt_password, doorName);
+MyMqtt mqtt(mqttServer, mqttPort, mqtt_id, "", "", doorName);
 
 /**
  * Initialize.
@@ -64,9 +64,9 @@ void loop(){
     Serial.println(rfid.card);
     
     // http request to add card and door authorisation if add timout hasen't run out yet
-    if (mqtt.add > 0){ http.sendPostReq(api_card_add, "cardUid", rfid.card.c_str(), "doorName", doorName); }
+    if (mqtt.add > 0){ http.sendPostReq(api_card_add, "uid", rfid.card.c_str(), "doorName", doorName); }
     // http request to check if card is authorized
-    else{http.sendPostReq(api_card_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
+    else{ http.sendPostReq(api_card_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
     //mqtt.publish(mqtt_pub_check, rfid.card.c_str());
   }
 
@@ -95,21 +95,3 @@ void loop(){
   }
   delay(250);
 }
-
-// callback to be executed when the subscribed-to topic has a pub
-/*void callback(char *topic, byte *payload, unsigned int length){
-  Serial.print("Message received from ");
-  Serial.print(topic);
-  Serial.print(" ");
-  for (int i = 0; i < length; i++) { acsLvl = (payload[i] - '0'); }
-  Serial.print(acsLvl);
-
-  // gestion des etats selon la reponse de l'api
-  switch (acsLvl) {
-  case 1: auth=1; break;
-  case 2: add=20; break;
-    default: break;
-  }
-
-  Serial.println();
-}*/
