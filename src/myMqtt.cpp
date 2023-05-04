@@ -17,16 +17,19 @@ void MyMqtt::callback(char *topic, byte *payload, unsigned int length){
   Serial.print(topic);
   Serial.print(" ");
   String message;
-  for (int i = 0; i < length; i++) { 
-    message += (char)payload[i];
-  }
+  for (int i = 0; i < length; i++) { message += (char)payload[i];}
   Serial.print(message);
 
-  if (strcmp(topic, mqttSubAccess) == 0) {
-    if (strcmp(message.c_str(), doorName) == 0) { this->auth = 1; } 
-  } 
-  if (strcmp(topic, mqttSubAdd) == 0) {
-    this->add = 20;
+  if (strcmp(topic, mqttSubOpen) == 0) {
+    if (strcmp(message.c_str(), doorName) == 0) { this->open = 1; } 
+  }
+
+  if (strcmp(topic, mqttSubAddCard) == 0) {
+    if (strcmp(message.c_str(), doorName) == 0) { this->addCard = 20;} 
+  }
+
+  if (strcmp(topic, mqttSubAddAccess) == 0) {
+    if (strcmp(message.c_str(), doorName) == 0) { this->addAccess = 20;} 
   }
   // update member variables based on the received message
   // switch (access) {
@@ -47,8 +50,9 @@ void MyMqtt::setup() {
   Serial.println("Connecting to MQTT server...");
   if (mqttClient.connect(mqttClientId, mqttUsername, mqttPassword)) {
     Serial.println("Connected to MQTT server");
-    mqttClient.subscribe(mqttSubAccess);
-    mqttClient.subscribe(mqttSubAdd);
+    mqttClient.subscribe(mqttSubOpen);
+    mqttClient.subscribe(mqttSubAddCard);
+    mqttClient.subscribe(mqttSubAddAccess);
   } else {
     Serial.print("MQTT connection failed with error code ");
     Serial.println(mqttClient.state());
@@ -69,8 +73,9 @@ void MyMqtt::refresh() {
     Serial.println("Connecting to MQTT server...");
     if (mqttClient.connect(mqttClientId, mqttUsername, mqttPassword)) {
       Serial.println("Connected to MQTT server");
-      mqttClient.subscribe(mqttSubAccess);
-      mqttClient.subscribe(mqttSubAdd);
+    mqttClient.subscribe(mqttSubOpen);
+    mqttClient.subscribe(mqttSubAddCard);
+    mqttClient.subscribe(mqttSubAddAccess);
     } 
     else {
       Serial.print("MQTT connection failed with error code ");

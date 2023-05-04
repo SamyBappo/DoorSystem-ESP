@@ -41,8 +41,9 @@ void setup(){
   }
   delay(100);
 
-  mqtt.mqttSubAccess = mqtt_sub_access;
-  mqtt.mqttSubAdd = mqtt_sub_add;
+  mqtt.mqttSubOpen = mqtt_sub_open;
+  mqtt.mqttSubAddCard = mqtt_sub_card;
+  mqtt.mqttSubAddAccess = mqtt_sub_access;
   mqtt.setup();// mqtt connection
 
   while (!Serial)
@@ -63,17 +64,21 @@ void loop(){
     Serial.print("UID tag: ");
     Serial.println(rfid.card);
     
-    // http request to add card and door authorisation if add timout hasen't run out yet
-    if (mqtt.add > 0){ http.sendPostReq(api_card_add, "uid", rfid.card.c_str(), "doorName", doorName); }
     // http request to check if card is authorized
-    else{ http.sendPostReq(api_card_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
+    if(mqtt.addCard==0 & mqtt.addAccess==0){ http.sendPostReq(api_access_check, "cardUid", rfid.card.c_str(), "doorName", doorName); }
+
+    // http request to add card and door authorisation if add timout hasen't run out yet
+    if(mqtt.addCard > 0){ http.sendPostReq(api_card_add, "uid", rfid.card.c_str(), "doorName", doorName); }
+
+    // http request to add card and door authorisation if add timout hasen't run out yet
+    if(mqtt.addAccess > 0){ http.sendPostReq(api_access_add, "cardUid", rfid.card.c_str(), "doorName", doorName); }
     //mqtt.publish(mqtt_pub_check, rfid.card.c_str());
   }
 
   mqtt.loop(); // loop mqtt client to check for incoming messages
   
   // opens door if card is authorized
-  if (mqtt.auth) {
+  if (mqtt.open) {
     digitalWrite(RELAY_PIN, HIGH);  // open door
     digitalWrite(LED_GREEN_PIN, HIGH);
     digitalWrite(LED_RED_PIN, LOW);
@@ -81,17 +86,27 @@ void loop(){
     digitalWrite(RELAY_PIN, LOW);   // close door
     digitalWrite(LED_GREEN_PIN, LOW);
     digitalWrite(LED_RED_PIN, HIGH);
-    mqtt.auth=0;                    // reset auth
+    mqtt.open=0;                    // reset auth
   }
 
   
-  if(mqtt.add > 0){
-    mqtt.add --;
+  if(mqtt.addCard > 0){
+    mqtt.addCard --;
     digitalWrite(LED_YELLOW_PIN, HIGH);
-    Serial.print(mqtt.add);
+    Serial.print(mqtt.addCard);
     Serial.println(" seconds remaining, Next card will be added .... ");
     delay (250);
     digitalWrite(LED_YELLOW_PIN, LOW);
   }
+
+  if(mqtt.addAccess > 0){
+    mqtt.addAccess --;
+    digitalWrite(LED_YELLOW_PIN, HIGH);
+    Serial.print(mqtt.addAccess);
+    Serial.println(" seconds remaining, Next card will be authorised .... ");
+    delay (250);
+    digitalWrite(LED_YELLOW_PIN, LOW);
+  }
+
   delay(250);
 }
