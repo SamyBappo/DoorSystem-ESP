@@ -9,10 +9,9 @@
 #define LED_GREEN_PIN 2
 #define LED_YELLOW_PIN 4
 #define LED_RED_PIN 17
-#define ONBOARD_LED_PIN 2
 
 // default Wifi credentianls
-const char *ssid = "X280";
+const char *ssid = "P500";
 const char *password = "Chepo123";
 
 // const and var for mqtt connection and communication
@@ -32,8 +31,8 @@ const char *mqtt_password   = "Patate123";
 const char *mqtt_id         = "ESP32";
 //const char *mqtt_pub_check  = "DoorSystem/card/check";
 //const char *mqtt_pub_addCard= "DoorSystem/card/add";
-const char *mqtt_sub_open   = "DoorSystem/door/open";
-const char *mqtt_sub_card   = "DoorSystem/card/add";
-const char *mqtt_sub_access = "DoorSystem/access/add";
+const char *mqtt_door_open  = "DoorSystem/door/open";
+const char *mqtt_card_add   = "DoorSystem/card/add";
+const char *mqtt_access_add = "DoorSystem/access/add";
 
 #endif

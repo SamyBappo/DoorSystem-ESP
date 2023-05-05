@@ -41,9 +41,10 @@ void setup(){
   }
   delay(100);
 
-  mqtt.mqttSubOpen = mqtt_sub_open;
-  mqtt.mqttSubAddCard = mqtt_sub_card;
-  mqtt.mqttSubAddAccess = mqtt_sub_access;
+  mqtt.mqttSubOpen = mqtt_door_open;
+  mqtt.mqttSubAddCard = mqtt_card_add;
+   
+  mqtt.mqttSubAddAccess = mqtt_access_add;
   mqtt.setup();// mqtt connection
 
   while (!Serial)
