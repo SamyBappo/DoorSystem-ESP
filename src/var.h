@@ -3,16 +3,16 @@
 #define VARS
 
 #define RELAY_PIN 15 // pin for relay
-#define RST_PIN 22 // Reset pin
-#define SS_PIN 21  // Slave select pin
+#define RST_PIN 39 // Reset pin
+#define SS_PIN 5  // Slave select pin
 
 #define LED_GREEN_PIN 2
 #define LED_YELLOW_PIN 4
 #define LED_RED_PIN 17
 
 // default Wifi credentianls
-const char *ssid = "P500";
-const char *password = "Chepo123";
+const char *ssid = "Velvet"; // "EcoleDuWeb2.4g"; // "DESKTOP-LAMBDA"; //
+const char *password = "Chepo123"; // "EcoleDuWEB"; // "bonjoure";// 
 
 // const and var for mqtt connection and communication
 const char *doorName        = "C-089";
